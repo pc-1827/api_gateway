@@ -49,7 +49,8 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public Mono<RouteDTO> createRoute(Route route) {
-        if (route.getRouteId() == null) {
+        // Set default values if needed
+        if (route.getRouteId() == null || route.getRouteId().isEmpty()) {
             route.setRouteId(UUID.randomUUID().toString());
         }
 
@@ -58,7 +59,7 @@ public class RouteServiceImpl implements RouteService {
 
         return routeRepository.save(route)
                 .map(this::convertToDTO)
-                .doOnSuccess(r -> refreshRoutes().subscribe());
+                .doOnSuccess(routeDTO -> refreshRoutes().subscribe());
     }
 
     @Override
@@ -71,6 +72,10 @@ public class RouteServiceImpl implements RouteService {
                     existingRoute.setOrder(route.getOrder());
                     existingRoute.setFilters(route.getFilters());
                     existingRoute.setMetadata(route.getMetadata());
+                    existingRoute.setCircuitBreaker(route.getCircuitBreaker());
+                    existingRoute.setRateLimiter(route.getRateLimiter());
+                    existingRoute.setTimeout(route.getTimeout());
+                    existingRoute.setRetry(route.getRetry());
                     existingRoute.setUpdatedAt(LocalDateTime.now());
                     existingRoute.setUpdatedBy(route.getUpdatedBy());
 
@@ -131,6 +136,10 @@ public class RouteServiceImpl implements RouteService {
                 .metadata(route.getMetadata())
                 .filters(route.getFilters())
                 .enabled(route.isEnabled())
+                .circuitBreaker(route.getCircuitBreaker())
+                .rateLimiter(route.getRateLimiter())
+                .timeout(route.getTimeout())
+                .retry(route.getRetry())
                 .createdAt(route.getCreatedAt())
                 .updatedAt(route.getUpdatedAt())
                 .createdBy(route.getCreatedBy())

@@ -1,5 +1,9 @@
 package com.gateway.dto;
 
+import com.gateway.model.CircuitBreakerConfig;
+import com.gateway.model.RateLimiterConfig;
+import com.gateway.model.RetryConfig;
+import com.gateway.model.TimeoutConfig;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +26,12 @@ public class RouteDTO {
     private Map<String, Object> metadata;
     private Map<String, String> filters;
     private boolean enabled;
+
+    // Resilience configurations
+    private CircuitBreakerConfig circuitBreaker;
+    private RateLimiterConfig rateLimiter;
+    private TimeoutConfig timeout;
+    private RetryConfig retry;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
