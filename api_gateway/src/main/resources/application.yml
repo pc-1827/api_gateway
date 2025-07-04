@@ -13,24 +13,21 @@ spring:
         webflux:
           discovery:
             locator:
-              enabled: false  # Disable discovery locator
-      discovery:
-        locator:
-          enabled: false
-      routes: []  # Empty array to allow routes to be dynamically loaded
-      filter:
-        path-rewrite:
-          enabled: true
-        circuit-breaker:
-          enabled: true
-        redis-rate-limiter:
-          enabled: true
-        timeout:
-          enabled: true
-        retry:
-          enabled: true
-        request-rate-limiter:
-          enabled: true
+              enabled: false  # Updated property
+          routes: []  # Updated property
+          filter:
+            path-rewrite:
+              enabled: true
+            circuit-breaker:
+              enabled: true
+            redis-rate-limiter:
+              enabled: true
+            timeout:
+              enabled: true
+            retry:
+              enabled: true
+            request-rate-limiter:
+              enabled: true
       default-filters:
         - name: Resilience4J
   data:
@@ -43,33 +40,31 @@ spring:
       host: localhost
       port: 6379
       timeout: 2000
-      connect-timeout: 2000
-      client-name: api-gateway
-  redis:
-    # Add this to ensure legacy properties are still processed
-    host: ${spring.data.redis.host}
-    port: ${spring.data.redis.port}
-    timeout: ${spring.data.redis.timeout}
 
 eureka:
   client:
-    enabled: false  # Disable Eureka client completely
-    register-with-eureka: false  # Don't register with Eureka
-    fetch-registry: false  # Don't fetch registry information
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
 
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
     com.gateway: DEBUG
     reactor.netty: INFO
-    com.netflix.discovery: OFF  # Turn off Eureka discovery logging
-    com.netflix.eureka: OFF  # Turn off Eureka client logging
+    com.netflix.discovery: OFF
+    com.netflix.eureka: OFF
 
 management:
   endpoints:
     web:
       exposure:
-        include: gateway-refresh, health, info
-  endpoint:
-    gateway:
-      enabled: true
+        include: gateway, gateway-refresh, health, info
+
+metrics:
+  collection:
+    enabled: true
+    retention-days: 30
+  analysis:
+    enabled: true
+    schedule: "0 0/15 * * * *"

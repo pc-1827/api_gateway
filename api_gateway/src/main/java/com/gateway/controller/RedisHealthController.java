@@ -9,6 +9,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -57,5 +58,10 @@ public class RedisHealthController {
                     response.put("message", e.getMessage());
                     return Mono.just(ResponseEntity.status(500).body(response));
                 });
+    }
+
+    @GetMapping("/debug/redis-keys")
+    public Mono<List<String>> getRedisKeys() {
+        return redisTemplate.keys("*").collectList();
     }
 }

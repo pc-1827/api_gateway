@@ -49,17 +49,22 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public Mono<RouteDTO> createRoute(Route route) {
-        // Set default values if needed
-        if (route.getRouteId() == null || route.getRouteId().isEmpty()) {
-            route.setRouteId(UUID.randomUUID().toString());
+        // Set creation timestamps if not already set
+        if (route.getCreatedAt() == null) {
+            route.setCreatedAt(LocalDateTime.now());
         }
-
-        route.setCreatedAt(LocalDateTime.now());
-        route.setUpdatedAt(LocalDateTime.now());
+        if (route.getUpdatedAt() == null) {
+            route.setUpdatedAt(LocalDateTime.now());
+        }
 
         return routeRepository.save(route)
                 .map(this::convertToDTO)
-                .doOnSuccess(routeDTO -> refreshRoutes().subscribe());
+                .doOnSuccess(r -> refreshRoutes().subscribe())
+                .doOnError(e -> log.error("Error creating route: {}", e.getMessage(), e))
+                .onErrorResume(e -> {
+                    log.error("Failed to create route: {}", e.getMessage());
+                    return Mono.error(new RuntimeException("Failed to create route: " + e.getMessage()));
+                });
     }
 
     @Override
