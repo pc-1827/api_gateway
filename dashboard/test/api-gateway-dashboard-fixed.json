@@ -1,0 +1,86 @@
+{
+  "dashboard": {
+    "title": "API Gateway Dashboard",
+    "refresh": "10s",
+    "time": {
+      "from": "now-15m",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "title": "Active Routes",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
+        "id": 1,
+        "targets": [
+          {
+            "expr": "spring_cloud_gateway_routes_count",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "green", "value": null }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "API Gateway Requests",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 16, "x": 8, "y": 0},
+        "id": 2,
+        "targets": [
+          {
+            "expr": "sum(rate(spring_cloud_gateway_requests_seconds_count[1m])) by (routeId)",
+            "refId": "A",
+            "legendFormat": "{{routeId}}"
+          }
+        ],
+        "options": {
+          "legend": {
+            "calcs": ["mean", "lastNotNull", "max"],
+            "displayMode": "table",
+            "placement": "bottom"
+          }
+        }
+      },
+      {
+        "title": "Response Time by Route (ms)",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "id": 3,
+        "targets": [
+          {
+            "expr": "sum(rate(spring_cloud_gateway_requests_seconds_sum[1m])) by (routeId) / sum(rate(spring_cloud_gateway_requests_seconds_count[1m])) by (routeId) * 1000",
+            "refId": "A",
+            "legendFormat": "{{routeId}}"
+          }
+        ]
+      },
+      {
+        "title": "MongoDB Operations",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "id": 4,
+        "targets": [
+          {
+            "expr": "sum(rate(mongodb_driver_commands_seconds_count[1m])) by (collection, command)",
+            "refId": "A",
+            "legendFormat": "{{collection}} - {{command}}"
+          }
+        ]
+      }
+    ]
+  },
+  "overwrite": true
+}

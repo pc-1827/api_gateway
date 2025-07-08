@@ -1,0 +1,40 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "API Gateway Dashboard",
+    "tags": ["api-gateway"],
+    "timezone": "browser",
+    "refresh": "5s",
+    "schemaVersion": 16,
+    "version": 0,
+    "panels": [
+      {
+        "title": "Active Routes",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "id": 1,
+        "targets": [
+          {
+            "expr": "spring_cloud_gateway_routes_count",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "title": "MongoDB Queries",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "id": 2,
+        "targets": [
+          {
+            "expr": "mongodb_driver_commands_seconds_count",
+            "legendFormat": "{{collection}} - {{command}}",
+            "refId": "A"
+          }
+        ]
+      }
+    ]
+  },
+  "folderId": 0,
+  "overwrite": true
+}

@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # This resolves to the host's IP
+    networks:
+      - monitoring-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring-network
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+
+  traffic-generator:
+    image: curlimages/curl:latest
+    container_name: traffic-generator
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring-network
+    restart: on-failure
+    entrypoint: /bin/sh
+    volumes:
+      - ./docker/scripts:/scripts
+    command: /scripts/generate-traffic.sh
+
+networks:
+  monitoring-network:
+    driver: bridge
+
+volumes:
+  grafana-data:
